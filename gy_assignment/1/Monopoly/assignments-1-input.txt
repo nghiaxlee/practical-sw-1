@@ -1,0 +1,28 @@
+7
+Property
+Property
+Property
+Property
+Property
+Property
+Property
+4
+Nghia Careful
+Csaba Greedy
+Zoli Tactical
+Attila Tactical
+
+
+7
+Service 500
+Service 400
+Lucky 1000
+Lucky 233
+Property
+Property
+Property
+4
+Nghia Careful
+Csaba Greedy
+Zoli Tactical
+Attila Tactical

@@ -1,0 +1,34 @@
+Use circular linked list for players and fields
+
+Do I need to use For each in every Collection? No
+What is testing (white/black)?
+
+Put what you want to test: (Exception, Reading, Speed, Reading dice, ...)
+e.g:
+Input1:
+7
+Service 500
+Service 400
+Lucky 1000
+Lucky 233
+Property
+Property
+Property
+4	
+Nghia Careful
+Csaba Greedy
+Zoli Tactical
+Attila Tactical
+
+Output1:
+*****
+
+Input2:
+Output2:
+
+Input3:
+Output3:
+
+
+What to print for owned properties.?
+Index
