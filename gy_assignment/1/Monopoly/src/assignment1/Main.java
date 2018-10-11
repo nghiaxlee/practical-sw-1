@@ -38,16 +38,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // TODO: Create Document:.
-
-//        description of the exercise DONE
-//        short description how to use your program (user doc) DONE
-//        UML class diagram (made with a dedicated UML tool) DONE
-//        short descriptions of the implemented methods DONE
-//        list of test cases you have tested (at least 10 pieces)
-        // TODO: Gen big test.
-
-
         // TODO: Write out the history of the game;
 
 

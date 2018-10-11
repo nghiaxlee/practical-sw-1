@@ -1,0 +1,33 @@
+\item \begin{itemize} \item \textbf{Input}
+
+7
+
+Service X
+
+Service 4000
+
+Service 3000
+
+Lucky 233
+
+Property
+
+Property
+
+Property
+
+4
+
+A Careful
+
+B Greedy
+
+C Tactical
+
+D Tactical
+
+4 5 6 3 3 2 1 5 4 5 6 4 3 6 1 1 4
+
+Not enough elements or invalid input!
+
+\end{itemize}

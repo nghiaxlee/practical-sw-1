@@ -1,0 +1,32 @@
+\item \begin{itemize} \item \textbf{Input}
+
+7
+
+Property
+
+Property
+
+Property
+
+Property
+
+Property
+
+Property
+
+Property
+
+4
+
+A Careful
+
+B Greedy
+
+C Tactical
+
+D Tactical
+
+1 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1
+
+Error in testing: Not enough turns to find the winner
+\end{itemize}
