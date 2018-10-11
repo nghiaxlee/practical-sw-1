@@ -45,11 +45,10 @@ public class Main {
 //        UML class diagram (made with a dedicated UML tool) DONE
 //        short descriptions of the implemented methods DONE
 //        list of test cases you have tested (at least 10 pieces)
+        // TODO: Gen big test.
 
 
         // TODO: Write out the history of the game;
-
-        // TODO: Read dice from file.
 
 
         Monopoly game = new Monopoly();
@@ -72,13 +71,31 @@ public class Main {
 
         } catch (NoSuchElementException e) {
 
-            System.out.println("Not enough element or invalid input!");
+            System.out.println("Not enough elements or invalid input!");
 
             System.exit(-1);
 
+        } catch (InfiniteLoopGameException e) {
+
+            System.out.println("This input will cause infinite loop game!");
+
+            System.exit(-1);
+
+        } catch (NegativeInputException e) {
+
+            System.out.println("The input should not have negative numbers!");
+
+            System.exit(-1);
         }
 
-        game.start();
+        try {
+            game.start();
+        } catch (NotEnoughRollException e) {
+
+            System.out.println("Error in testing: Not enough turns to find the winner");
+
+            System.exit(-1);
+        }
 
     }
 

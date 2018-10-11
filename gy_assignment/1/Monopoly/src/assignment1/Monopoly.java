@@ -79,7 +79,7 @@ public class Monopoly {
 
      */
 
-    public void start()
+    public void start() throws NotEnoughRollException
 
     {
 
@@ -93,7 +93,7 @@ public class Monopoly {
 
             ListIterator<Player> player = players.listIterator();
 
-            while (player.hasNext())
+            while (players.size() > 1 && player.hasNext())
 
             {
 
@@ -103,9 +103,13 @@ public class Monopoly {
 
                 // and we will use it to check our program.
 
+                if (test_flag)
+                    if (!roll.hasNext())
+                        throw new NotEnoughRollException();
+
                 int dice = test_flag ? roll.next() : rand.nextInt(DICE) + 1;
 
-                System.out.println(dice);
+//                System.out.print(dice + " ");
 
                 curr.updatePos(dice, fields.size());
 
@@ -120,6 +124,10 @@ public class Monopoly {
                     player.remove();
 
                 }
+
+//                // DEBUG
+//                for(Player p: players)
+//                    System.out.println(p);
 
             }
 
@@ -162,17 +170,23 @@ public class Monopoly {
 
     public void read(String filename) throws FileNotFoundException, InvalidInputException,
 
-            NoSuchElementException
+            NoSuchElementException, InfiniteLoopGameException, NegativeInputException
 
     {
 
         Scanner sc = new Scanner(new BufferedReader(new FileReader(filename)));
 
-        int num_fields = sc.nextInt();
+        int num_fields = inputCheck(sc);
+
+        int cnt_lucky = 0;
+
+        // For checking input number
+
+        int tmp;
 
         if (num_fields == 0)
 
-            throw new InvalidInputException();
+            throw new InfiniteLoopGameException();
 
         for(int i = 0; i < num_fields; ++i)
 
@@ -184,13 +198,19 @@ public class Monopoly {
 
                 case "service":
 
-                    field = new Service(sc.nextInt(), fields.size());
+                    tmp = inputCheck(sc);
+
+                    field = new Service(tmp, fields.size());
 
                     break;
 
                 case "lucky":
 
-                    field = new Lucky(sc.nextInt(), fields.size());
+                    tmp = inputCheck(sc);
+
+                    field = new Lucky(tmp, fields.size());
+
+                    ++cnt_lucky;
 
                     break;
 
@@ -210,11 +230,15 @@ public class Monopoly {
 
         }
 
+        if (cnt_lucky == num_fields)
+
+            throw new InfiniteLoopGameException();
+
         int num_players = sc.nextInt();
 
         if (num_players == 0)
 
-            throw new InvalidInputException();
+            throw new InfiniteLoopGameException();
 
         for(int i = 0; i < num_players; ++i)
 
@@ -262,7 +286,7 @@ public class Monopoly {
 
             test_flag = true;
 
-            int tmp = sc.nextInt();
+            tmp = inputCheck(sc);
 
             if (tmp > 6 || tmp < 1)
 
@@ -274,6 +298,14 @@ public class Monopoly {
 
         }
 
+    }
+
+    private int inputCheck(Scanner sc) throws NegativeInputException
+    {
+        int tmp = sc.nextInt();
+        if (tmp < 0)
+            throw new NegativeInputException();
+        return tmp;
     }
 
 }
