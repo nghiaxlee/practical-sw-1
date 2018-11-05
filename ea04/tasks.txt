@@ -1,0 +1,43 @@
+When a worker arrive to our factory, our login system records his ID card number, 
+the time of arrival, his name, and the time of leaving (if he goes home).
+The log file is not complete, because it is queried in the middle of the day,
+so some workers maybe still in the factory. In this case the time of leaving is undefined.
+If somebody goes in and out multiple times a day, then only his last login record can
+omit the time of leaving.
+The file is sorted first by IDs, then by arrival time.
+
+
+11111111 08:15 Tom Jones 08:30
+11111111 08:40 Tom Jones 09:00
+11111111 08:55 Tom Jones 10:00
+22222222 10:10 Mary Poppins
+22222222 10:15 Mary Poppins
+33333333 12:00 Incredible Hulk
+33333333 14:00 Incredible Hulk 15:00
+
+----------------------------------------------------------
+
+Questions:
+----------
+
+1. How many people are still in the factory?
+
+2. Who tried to trick the login gate? 
+(People, who seemingly did not leave the factory, but entered again at the gate.)
+
+3. Did a system error occur? 
+(System registered an arrival time of a person, which is earlier than a
+former leaving time of the same person.)
+
+4. How many invalid lines does the file contain? 
+
+Use exception handling. Handle the exceptions, when the file cannot be opened,
+or its format is invalid.
+----------------------------------------------------------
+
+Add the following feature to the solution.
+Create an attribute class, which holds the text messages used by the program.
+
+Make the program international.
+Create two files, one for each language, where each line will contain the corresponding
+text message of the program (we can even use text formatters).
