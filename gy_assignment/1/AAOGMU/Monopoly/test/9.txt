@@ -1,0 +1,15 @@
+7
+Lucky 233
+Lucky 233
+Lucky 233
+Lucky 233
+Lucky 233
+Lucky 233
+Lucky 233
+4
+A Careful
+B Greedy
+C Taccal
+D Tactical
+4 5 6 3 3 2 1 5 4 5 6 4 3 6 1 1 4
+This input will cause infinite loop game!
