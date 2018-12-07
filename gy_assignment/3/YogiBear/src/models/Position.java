@@ -4,11 +4,13 @@ import java.util.Objects;
 
 public class Position {
     public int x, y;
+    public boolean visited;
 
     public Position(int x, int y)
     {
         this.x = x;
         this.y = y;
+        visited = false;
     }
 
     public Position go(Direction d)
