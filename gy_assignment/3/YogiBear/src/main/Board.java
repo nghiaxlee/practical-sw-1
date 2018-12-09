@@ -48,6 +48,7 @@ public class Board extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D gr = (Graphics2D)g;
         int w = game.map.C;
         int h = game.map.R;

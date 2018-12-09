@@ -3,18 +3,13 @@ package models;
 public class GameLogic {
 
     public Map map;
-    private Map backup;
     public int level;
+    public long startTime;
 
     public GameLogic()
     {
         newGame();
 //        map.PrintMap();
-    }
-
-    public GameLogic(GameLogic g)
-    {
-        map = new Map(g.map);
     }
 
     public boolean isEnd()
@@ -25,13 +20,8 @@ public class GameLogic {
     public void newGame()
     {
         map = new Map(10, 15);
-        backup = new Map(map);
         level = 1;
-    }
-
-    public void restart()
-    {
-        map = new Map(backup);
+        startTime = System.currentTimeMillis();
     }
 
     public boolean step(Direction d)
@@ -40,7 +30,7 @@ public class GameLogic {
         if (stepped == 0) {
             map = new Map(10, 15);
             level++;
-            backup = new Map(map);
+            startTime = System.currentTimeMillis();
         }
         return stepped == 1;
     }

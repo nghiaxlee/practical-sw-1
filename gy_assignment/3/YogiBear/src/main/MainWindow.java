@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.Date;
 
 public class MainWindow extends JFrame{
     private final GameLogic game;
@@ -64,20 +65,17 @@ public class MainWindow extends JFrame{
                 Direction d = null;
                 switch (key_code)
                 {
-                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_A:
                         d = Direction.LEFT;
                         break;
-                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_W:
                         d = Direction.UP;
                         break;
-                    case KeyEvent.VK_DOWN:
+                    case KeyEvent.VK_S:
                         d = Direction.DOWN;
                         break;
-                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_D:
                         d = Direction.RIGHT;
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        game.restart();
                         break;
                 }
                 if (d != null && game.step(d))
@@ -110,6 +108,8 @@ public class MainWindow extends JFrame{
         String s = "Level: " + game.level;
         s += "  Points: " + game.map.point + "/" + game.map.num_basket;
         s += "  Life: " + game.map.life;
+        long elapsedTime = (new Date()).getTime() - game.startTime;
+        s += "  Elapsed Time: " + elapsedTime / 1000;
         gamePoint.setText(s);
     }
 

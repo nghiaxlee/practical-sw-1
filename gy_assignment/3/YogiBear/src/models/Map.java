@@ -57,7 +57,7 @@ public class Map {
         grids = new Element[R][C];
         in_path = new boolean[R][C];
         player = new Position(0, 0);
-        rangers = new ArrayList<>(m.rangers);
+        rangers = new ArrayList<>(m.rangers); // BUG
         for(int i = 0; i < R; ++i)
             for(int j = 0; j < C; ++j)
             {
@@ -99,8 +99,7 @@ public class Map {
         num_ranger = 2; // min(rand.nextInt(5) + 1, R * C - num_obstacle - num_basket);
         boolean[] col = new boolean[C];
         boolean[] row = new boolean[R];
-        int M = R / 2;
-        for(int i = M - 1; i <= M + 1; ++i)
+        for(int i = 4; i < R; i += 2)
         {
             for(int j = 0; j < C; ++j)
             {
@@ -110,8 +109,7 @@ public class Map {
             }
         }
         num_ranger += 2;
-        M = C / 2;
-        for(int j = M + 3; j >= M - 3; --j)
+        for(int j = C - 1; j >= 4; j -= 2)
         {
             for(int i = 1; i < R; ++i)
             {
@@ -122,16 +120,55 @@ public class Map {
         }
     }
 
-    private boolean AddRanger(int i, int j, boolean horizon)
+    private Position goFurthest(Position cur, Direction d)
     {
-        Position pos = new Position(i, j);
-        if (grids[i][j] != Element.BASKET && !player.equals(pos))
+        Position nxt = cur.go(d);
+        while (isFree(nxt, false))
         {
-            if (rangers.size() < num_ranger && rand.nextInt(2) == 0) {
-                grids[i][j] = Element.RANGER;
-                rangers.add(new Ranger(pos, horizon));
-                return true;
-            }
+            cur = nxt;
+            nxt = cur.go(d);
+        }
+        return cur;
+    }
+
+    private int diameter(Position pos, boolean horizontal)
+    {
+        Position cur = new Position(pos.x, pos.y);
+        Position sentinel;
+        Direction d;
+        if (horizontal)
+        {
+            d = Direction.LEFT;
+            cur = goFurthest(cur, d);
+            sentinel = new Position(cur.x, cur.y);
+            d = Direction.RIGHT;
+            cur = goFurthest(cur, d);
+            return cur.y - sentinel.y + 1;
+        }
+        else
+        {
+            d = Direction.UP;
+            // Why goFurthest need to return Position?? I thought cur was passed by reference??
+            cur = goFurthest(cur, d);
+            sentinel = new Position(cur.x, cur.y);
+            d = Direction.DOWN;
+            cur = goFurthest(cur, d);
+            return cur.x - sentinel.x + 1;
+        }
+    }
+
+    private boolean AddRanger(int i, int j, boolean horizontal)
+    {
+        if (rangers.size() >= num_ranger)
+            return false;
+        Position pos = new Position(i, j);
+        if (grids[i][j] != Element.BASKET && !player.equals(pos) && diameter(pos, horizontal) > 2)
+        {
+            if (rand.nextInt(2) == 0)
+                return false;
+            grids[i][j] = Element.RANGER;
+            rangers.add(new Ranger(pos, horizontal));
+            return true;
         }
         return false;
     }
