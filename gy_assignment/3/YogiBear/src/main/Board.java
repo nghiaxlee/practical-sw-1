@@ -26,7 +26,7 @@ public class Board extends JPanel {
         ranger = ResourceLoader.loadImage("res/ranger.jpg");
         tree = ResourceLoader.loadImage("res/tree.png");
         hill = ResourceLoader.loadImage("res/hill.png");
-        empty = ResourceLoader.loadImage("res/empty.png");
+        empty = ResourceLoader.loadImage("res/grass00.png");
     }
 
     public boolean setScale(double scale)

@@ -2,6 +2,8 @@ package models;
 
 import java.util.*;
 
+import static java.lang.Math.min;
+
 public class Map {
 
     public final int R;
@@ -9,30 +11,29 @@ public class Map {
     public final int num_basket;
     public int num_obstacle;
     public int num_ranger;
-    public int num_step;
+    public int life;
     public int point;
     public Position player;
     public ArrayList<Direction> dir = new ArrayList<>(
             Arrays.asList(Direction.DOWN, Direction.UP, Direction.LEFT, Direction.RIGHT));
+    public ArrayList<Ranger> rangers;
     public final Element[][] grids;
     public boolean[][] in_path; // in_path[i][j] == true => Cannot has obstacle.
-    private Position[][] visited; // if (i, j) is visited, then the array will store its parent.
     public HashMap<Position, Boolean> collected;
-    private final Random rand = new Random(42);
+    private final Random rand = new Random();
 
     public Map(int R, int C)
     {
         this.R = R;
         this.C = C;
-        num_basket = rand.nextInt(R * C / 2) + 1;
+        num_basket = rand.nextInt(R * C / 10) + 1;
         num_ranger = 0;
         num_obstacle = 0;
-        num_step = 0;
         point = 0;
+        life = 3;
         collected = new HashMap<>();
         grids = new Element[R][C];
         in_path = new boolean[R][C];
-        visited = new Position[R][C];
         for(int i = 0; i < R; ++i)
             for(int j =0; j < C; ++j)
             {
@@ -41,13 +42,37 @@ public class Map {
             }
         player = new Position(0, 0);
         in_path[0][0] = true;
+        rangers = new ArrayList<>();
         GenMap();
+    }
+
+    public Map(Map m)
+    {
+        R = m.R;
+        C = m.C;
+        num_basket = m.num_basket;
+        num_ranger = m.num_ranger;
+        num_obstacle = m.num_obstacle;
+        collected = new HashMap<>(m.collected);
+        grids = new Element[R][C];
+        in_path = new boolean[R][C];
+        player = new Position(0, 0);
+        rangers = new ArrayList<>(m.rangers);
+        for(int i = 0; i < R; ++i)
+            for(int j = 0; j < C; ++j)
+            {
+                grids[i][j] = m.grids[i][j];
+                in_path[i][j] = m.in_path[i][j];
+            }
+        point = 0;
+        life = 3;
     }
 
     public void GenMap()
     {
         // DONE: Find path to (0, 0)
-        Bfs();
+        Position[][] visited = new Position[R][C]; // if (i, j) is visited, then the array will store its parent.
+        Bfs(visited);
         // Allocate baskets.
         for(int i = 0; i < num_basket; ++i)
         {
@@ -60,19 +85,58 @@ public class Map {
             } while (collected.get(pos) != null || pos.equals(player));
             collected.put(pos, false);
             grids[x][y] = Element.BASKET;
-            FillPath(pos);
+            FillPath(pos, visited);
         }
         // Allocate obstacles.
-        for(int i = 0; i < R; ++i)
-            for(int j = 0; j < C; ++j)
-                if (!in_path[i][j] && rand.nextInt(2) == 1)
-                {
+        for(int i = 0; i < R; ++i) {
+            for (int j = 0; j < C; ++j)
+                if (!in_path[i][j] && rand.nextInt(2) == 1) {
                     grids[i][j] = rand.nextInt(2) == 0 ? Element.HILL : Element.TREE;
                     num_obstacle++;
                 }
+        }
+        // Allocate ranger
+        num_ranger = 2; // min(rand.nextInt(5) + 1, R * C - num_obstacle - num_basket);
+        boolean[] col = new boolean[C];
+        boolean[] row = new boolean[R];
+        int M = R / 2;
+        for(int i = M - 1; i <= M + 1; ++i)
+        {
+            for(int j = 0; j < C; ++j)
+            {
+                if (row[i])
+                    break;
+                row[i] = AddRanger(i, j, true);
+            }
+        }
+        num_ranger += 2;
+        M = C / 2;
+        for(int j = M + 3; j >= M - 3; --j)
+        {
+            for(int i = 1; i < R; ++i)
+            {
+                if (col[j])
+                    break;
+                col[j] = AddRanger(i, j, false);
+            }
+        }
     }
 
-    private void Bfs()
+    private boolean AddRanger(int i, int j, boolean horizon)
+    {
+        Position pos = new Position(i, j);
+        if (grids[i][j] != Element.BASKET && !player.equals(pos))
+        {
+            if (rangers.size() < num_ranger && rand.nextInt(2) == 0) {
+                grids[i][j] = Element.RANGER;
+                rangers.add(new Ranger(pos, horizon));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void Bfs(Position[][] visited)
     {
         Queue<Position> q = new LinkedList<>();
         q.add(player);
@@ -93,7 +157,7 @@ public class Map {
         }
     }
 
-    private void FillPath(Position pos)
+    private void FillPath(Position pos, Position[][] visited)
     {
         while (!pos.equals(player))
         {
@@ -107,31 +171,78 @@ public class Map {
         return u.x >= 0 && u.y >= 0 && u.x < R && u.y < C;
     }
 
-    private boolean isFree(Position u)
+    private boolean isFree(Position u, boolean isPlayer)
     {
         if (!Valid(u))
             return false;
         Element e = grids[u.x][u.y];
         if (e == Element.BASKET)
         {
+            if (!isPlayer)
+                return true;
             point++;
+            collected.remove(u);
             grids[u.x][u.y] = Element.EMPTY;
             return true;
         }
-        return e == Element.EMPTY || e == Element.BASKET;
+        return e == Element.EMPTY;
     }
 
-    public boolean move(Direction d)
+    public int move(Direction d)
     {
         Position cur = player;
         Position nxt = cur.go(d);
-        if (isFree(nxt))
+        if (isFree(nxt, true))
         {
+            if (point == num_basket)
+                return 0;
             player = nxt;
-            num_step++;
+            return 1;
+        }
+        return -1;
+    }
+
+    public void moveRanger()
+    {
+        for(Ranger r: rangers) {
+            Position nxt = r.pos.go(r.dir);
+            if (isFree(nxt, false)) {
+                grids[r.pos.x][r.pos.y] = collected.get(r.pos) == null ? Element.EMPTY : Element.BASKET;
+                r.pos = nxt;
+                grids[r.pos.x][r.pos.y] = Element.RANGER;
+            } else {
+                r.changeDir();
+            }
+        }
+    }
+
+    private boolean isCollide(Position tmp)
+    {
+        if (tmp.equals(player)) {
+            life--;
+            player = new Position(0, 0);
             return true;
         }
         return false;
+    }
+
+    public void checkCollide()
+    {
+        for(Ranger r: rangers)
+        {
+            isCollide(r.pos);
+            for(Direction d: dir)
+            {
+                if (r.moveHorizontal && d != Direction.DOWN && d != Direction.UP) {
+                    Position tmp = r.pos.go(d);
+                    isCollide(tmp);
+                }
+                if (!r.moveHorizontal && d != Direction.RIGHT && d != Direction.LEFT) {
+                    Position tmp = r.pos.go(d);
+                    isCollide(tmp);
+                }
+            }
+        }
     }
 
     public void PrintMap()

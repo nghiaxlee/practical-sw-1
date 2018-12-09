@@ -11,6 +11,7 @@ import java.io.IOException;
 public class MainWindow extends JFrame{
     private final GameLogic game;
     private Board board;
+    private final JLabel gamePoint;
 
     public MainWindow() throws IOException
     {
@@ -21,6 +22,15 @@ public class MainWindow extends JFrame{
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menuGame = new JMenu("Game");
+        JMenuItem itemNew = new JMenuItem(new AbstractAction("New game") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.newGame();
+                refreshGamePoint();
+                board.refresh();
+                pack();
+            }
+        });
         JMenu menuGameScale = new JMenu("Zoom");
         createScaleMenuItems(menuGameScale, 1.0, 2.0, 0.5);
 
@@ -31,6 +41,7 @@ public class MainWindow extends JFrame{
             }
         });
 
+        menuGame.add(itemNew);
         menuGame.add(menuGameScale);
         menuGame.addSeparator();
         menuGame.add(menuGameExit);
@@ -41,6 +52,9 @@ public class MainWindow extends JFrame{
         try {
             add(board = new Board(game), BorderLayout.CENTER);
         } catch (IOException ex) {}
+
+        gamePoint = new JLabel("Nghia Le");
+        add(gamePoint, BorderLayout.NORTH);
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -62,19 +76,41 @@ public class MainWindow extends JFrame{
                     case KeyEvent.VK_RIGHT:
                         d = Direction.RIGHT;
                         break;
+                    case KeyEvent.VK_ESCAPE:
+                        game.restart();
+                        break;
                 }
-                board.repaint();
                 if (d != null && game.step(d))
                 {
+                    if (game.isEnd())
+                    {
+
+                    }
+                    else
+                    {
+                        game.map.moveRanger();
+                        game.map.checkCollide();
+                    }
                 }
+                refreshGamePoint();
+                board.repaint();
             }
         });
 
         setResizable(false);
-        setLocationRelativeTo(null);
+        //setLocationRelativeTo(null);
         board.setScale(2.0);
         pack();
+        refreshGamePoint();
         setVisible(true);
+    }
+
+    private void refreshGamePoint()
+    {
+        String s = "Level: " + game.level;
+        s += "  Points: " + game.map.point + "/" + game.map.num_basket;
+        s += "  Life: " + game.map.life;
+        gamePoint.setText(s);
     }
 
     private void createScaleMenuItems(JMenu menu, double from, double to, double by)
@@ -104,6 +140,6 @@ public class MainWindow extends JFrame{
         {
             new MainWindow();
         }
-        catch (IOException ex) {}
+        catch (IOException ex) { System.out.println("Error"); }
     }
 }
