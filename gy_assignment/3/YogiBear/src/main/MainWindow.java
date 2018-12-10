@@ -42,8 +42,17 @@ public class MainWindow extends JFrame{
             }
         });
 
+        // High score
+        JMenuItem menuHighScores = new JMenuItem(new AbstractAction("Highscores") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new HighScoreWindow(game.getHighScores(), MainWindow.this);
+            }
+        });
+
         menuGame.add(itemNew);
         menuGame.add(menuGameScale);
+        menuGame.add(menuHighScores);
         menuGame.addSeparator();
         menuGame.add(menuGameExit);
         menuBar.add(menuGame);
@@ -82,7 +91,13 @@ public class MainWindow extends JFrame{
                 {
                     if (game.isEnd())
                     {
-
+                        String msg = "Game over!";
+                        System.out.println("Nuoc mat em roi tro choi ket thuc!");
+                        String name = JOptionPane.showInputDialog("Please enter your name!");
+                        game.updateScores(name);
+                        JOptionPane.showMessageDialog(MainWindow.this, msg,
+                                "Bye!", JOptionPane.INFORMATION_MESSAGE);
+                        game.newGame();
                     }
                     else
                     {
