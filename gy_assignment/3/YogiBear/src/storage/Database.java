@@ -73,6 +73,7 @@ public class Database {
             String s = "INSERT INTO " + table + "(Name, Level) " +
                     "VALUES('" + player + "'," + level +
                     ") ON DUPLICATE KEY UPDATE Level=" + level;
+            return stmt.executeUpdate(s);
         } catch (Exception e) {
             System.out.println("storeToDB error");
         }
